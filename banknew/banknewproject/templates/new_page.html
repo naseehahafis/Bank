@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Page</title>
+</head>
+<body>
+    <h2>New Page</h2>
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+    <button id="showFormBtn">Show Form</button>
+    <form id="applicationForm" style="display:none;" method="post">
+    {% csrf_token %}
+    <label for="name">Name:</label><br>
+    <input type="text" id="name" name="name" required><br>
+
+    <label for="dob">Date of Birth:</label><br>
+    <input type="date" id="dob" name="dob" required><br>
+
+    <label for="age">Age:</label><br>
+    <input type="number" id="age" name="age" required><br>
+
+    <label for="gender">Gender:</label><br>
+    <input type="radio" id="male" name="gender" value="male">
+    <label for="male">Male</label>
+    <input type="radio" id="female" name="gender" value="female">
+    <label for="female">Female</label>
+    <input type="radio" id="other" name="gender" value="other">
+    <label for="other">Other</label><br>
+
+    <label for="phone">Phone Number:</label><br>
+    <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" required><br>
+
+    <label for="email">Email:</label><br>
+    <input type="email" id="email" name="email" required><br>
+
+    <label for="address">Address:</label><br>
+    <textarea id="address" name="address" rows="4" cols="50" required></textarea><br>
+
+    <label for="district">District:</label><br>
+    <select id="district" name="district" required>
+        <option value="" disabled selected>Select District</option>
+        <option value="Kasaragod">Kasaragod</option>
+        <option value="Kannur">Kannur</option>
+        <option value="Calicut">Calicut</option>
+        <option value="Wayanad">Wayanad</option>
+        <option value="Idukki">Idukki</option>
+
+    </select><br>
+
+    <label for="branch">Branch:</label><br>
+    <select id="branch" name="branch" required>
+        <option value="" disabled selected>Select Branch</option>
+     </select><br>
+
+
+
+    <label for="account_type">Account Type:</label><br>
+    <select id="account_type" name="account_type" required>
+        <option value="" disabled selected>Select Account Type</option>
+        <option value="savings">Savings Account</option>
+        <option value="current">Current Account</option>
+        <!-- Add more account types as needed -->
+    </select><br>
+
+    <label for="materials_provide">Materials Provide:</label><br>
+    <input type="checkbox" id="debit_card" name="materials_provide" value="debit_card">
+    <label for="debit_card">Debit Card</label>
+    <input type="checkbox" id="credit_card" name="materials_provide" value="credit_card">
+    <label for="credit_card">Credit Card</label>
+    <input type="checkbox" id="cheque_book" name="materials_provide" value="cheque_book">
+    <label for="cheque_book">Cheque Book</label><br>
+
+    <input type="submit" value="Submit">
+</form>
+    <a href="{% url 'home' %}">Return to Home Page</a>
+
+    <script>
+        document.getElementById('showFormBtn').addEventListener('click', function() {
+            document.getElementById('applicationForm').style.display = 'block';
+        });
+    </script>
+    <script>
+            document.getElementById('district').addEventListener('change', function() {
+            var district = this.value; // Get the selected district value
+
+            // Fetch branches dynamically using AJAX
+            fetch('/get_branches/?district=' + district)
+                .then(response => response.json())
+                .then(data => {
+                    var branchDropdown = document.getElementById('branch');
+                    branchDropdown.innerHTML = '<option value="" disabled selected>Select Branch</option>'; // Reset dropdown
+                    data.branches.forEach(function(branch) {
+                        var option = document.createElement('option');
+                        option.value = branch;
+                        option.text = branch;
+                        branchDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching branches:', error));
+    });
+    </script>
+</body>
+</html>

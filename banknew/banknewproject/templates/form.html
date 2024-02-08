@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Form</title>
+</head>
+<body>
+    <h2>Customer Information Form</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" name="dob" required><br><br>
+
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required><br><br>
+
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+        </select><br><br>
+
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" name="phone" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="address">Address:</label><br>
+        <textarea id="address" name="address" required></textarea><br><br>
+
+       <label for="district">Select District:</label>
+        <select id="district" name="district">
+            <option value="">Select District</option>
+            {% for district in districts %}
+                <option value="{{ district.id }}">{{ district.name }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <!-- Branch dropdown -->
+        <label for="branch">Branch:</label>
+        <select id="branch" name="branch">
+            <option value="">Select Branch</option>
+        </select><br><br>
+
+        <label for="account_type">Account Type:</label>
+        <select id="account_type" name="account_type">
+            <option value="savings">Savings Account</option>
+            <option value="current">Current Account</option>
+        </select><br><br>
+
+        <label>Materials Provide:</label><br>
+        <input type="checkbox" id="debit_card" name="materials_provide" value="debit_card">
+        <label for="debit_card">Debit Card</label><br>
+
+        <input type="checkbox" id="credit_card" name="materials_provide" value="credit_card">
+        <label for="credit_card">Credit Card</label><br>
+
+        <input type="checkbox" id="cheque_book" name="materials_provide" value="cheque_book">
+        <label for="cheque_book">Cheque Book</label><br><br>
+
+        <input type="submit" value="Submit">
+
+        <a href="{% url 'home' %}">Logout</a>
+    </form>
+
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+
+    <a href="{% url 'home' %}">Return to Home Page</a>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#district').change(function() {
+                var districtId = $(this).val();
+                $.ajax({
+                    url: '{% url "get_branches" district_id=0 %}'.replace('0', districtId),
+                    type: 'GET',
+                    success: function(data) {
+                        var options = '<option value="">Select Branch</option>';
+                        data.forEach(function(branch) {
+                            options += '<option value="' + branch.id + '">' + branch.name + '</option>';
+                        });
+                        $('#branch').html(options);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching branches:', error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
